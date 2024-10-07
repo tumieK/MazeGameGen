@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slic</title>
+    <title>TumiesMaze</title>
     <link rel="stylesheet" href="css/play.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
-    <script src="main.js" type="module"></script>
+    
+	<!-- Importing main.js as a module through a functions start(),
+      it will handle fetching data from server and game state -->	
+	<script src="main.js" type="module"></script>
     <script>
+	    <!-- Function start() fetches data from server to start the game using the LobbyId -->
         async function start() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -21,54 +25,41 @@
                 alert(err);
             }
         }
-        
-        async function reset() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const lobby = urlParams.get('lobby') ?? "";
-                let data = await fetch("/lobby/reset?" + new URLSearchParams({ lobby: lobby }));
-                let json = await data.json();
-                if (json.error) {
-                    throw json.error;
-                }
-            } catch (err) {
-                alert(err);
-            }
-        }
+       
     </script>
 </head>
 <body>
+    <!-- setting canva size which i will use to handle the graphics of the game -->
     <canvas style="width: 100%; height: 100%;" id="canvas" width="800" height="600"></canvas>
-    <div id="lobbyPanel">
+    <!-- Lobby Panel division is responsible for displaying the LobbyId the colour of the Player
+	and buttorns for starting the game.
+	<div id="lobbyPanel" -->
         <div>
-            <span>Lobby ID: </span><span id="lobby"></span>
+		    <!-- The name the users will use to join the same session which will be triggered by a spectator -->
+            <span>Session Name: </span><span id="lobby"></span>
         </div>
         <div id="playerColour">
             <span>You are</span>
             <span id="col"></span>
         </div>
-        <button id="startButton" onclick="javascript:start()">START</button>
-        <button id="resetButton" onclick="javascript:reset()">RESET</button>
+        <button id="startButton" onclick="javascript:start()" aria-label="Start the game">Start</button>
+       
     </div>
+	<!-- clock division is responsible for displaying game timer -->
     <div id="clockPanel">
         <div id="0g-clock-wrapper" class="clock-wrapper" style="top: 8px;">
             <h3>Zero-Gravity</h1>
             <div id="0g-clock" class="clock" style="background-color: red;"></div>
         </div>
-        <!-- <div class="clock-wrapper" style="top: 80px;">
-            <h3>Zero-Gravity</h1>
-            <div class="clock" style="background-color: red;"></div>
-        </div>
-        <div class="clock-wrapper" style="top: 152px;">
-            <h3>Zero-Gravity</h1>
-            <div class="clock" style="background-color: red;"></div>
-        </div> -->
+        
     </div>
+	<!-- wins screen division it is responsible for displaying a message when a player wins,along 
+	with a scoreboard of maximum of four players. -->
     <div id="winScreen">
         <div class="font-whacky">
             <span id="winPlayer">RED</span> <span>WINS!</span>
         </div>
-        <h1>Leaderboard</h1>
+        <h1>Score Board</h1>
         <div id="playerScores">
             <div id="playerScore1" class="playerScore">
                 <div class="playerName">Player 1</div>
