@@ -1,0 +1,176 @@
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: "Archivo", sans-serif;
+}
+
+@font-face {
+    font-family: 'agent_redregular';
+    src: url('fonts/agentred-webfont.woff2') format('woff2'),
+         url('fonts/agentred-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+#lobby {
+    color: rgb(44, 175, 44);
+}
+
+
+#lobbyPanel {
+    height: 60px;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    bottom: auto;
+    position: absolute;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+#col {
+    text-shadow: 0 0 5px #0008;
+}
+
+#startButton {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 45px;
+    width: 100px;
+}
+
+#resetButton {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 45px;
+    width: 100px;
+}
+
+#playerColour {
+    display: none;
+}
+
+button {
+    transition-duration: 0.3s;
+    box-shadow: 0px 5px 0px rgb(30, 117, 30);
+    background-color: rgb(44, 175, 44);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    border-radius: 0.5rem;
+    border-style: none;
+    font-size: large;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    transition-duration: 0.3s;
+    box-shadow: 0px 0px 0px rgb(46, 180, 46);
+    background-color: rgb(59, 218, 59);
+    transform: translateY(5px);
+}
+
+#winScreen {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+}
+
+.font-whacky {
+    font-family: "agent_redregular", sans-serif;
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+#winScreen{
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+#playerScores{
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.playerScore{
+    display: flex;
+    background-color: rgb(240, 240, 240);
+    padding: 0.6rem;
+    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: large;
+    /* div{
+        height: min-content;
+    } */
+}   
+
+#waitingText {
+    margin-top: 2rem;
+}
+
+#clockPanel {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction:column;
+    align-items: end;
+    color: white;
+}
+
+.clock {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    /* background: conic-gradient(transparent 0deg 120deg, white 128deg 360deg); */
+}
+
+.clock-wrapper {
+    display: none;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    text-wrap: nowrap;
+    position: absolute;
+    right: 8px;
+}
