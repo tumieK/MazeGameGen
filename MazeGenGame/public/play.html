@@ -11,7 +11,8 @@
       it will handle fetching data from server and game state -->	
 	<script src="main.js" type="module"></script>
     <script>
-	    <!-- Function start() fetches data from server to start the game using the LobbyId -->
+	    <!-- Function start() fetches data from server to start the game using the LobbyId 
+	    the reset() function is responsible for fetching data from the server to reset the game state -->
         async function start() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -45,7 +46,7 @@
     <!-- setting canva size which i will use to handle the graphics of the game -->
     <canvas style="width: 100%; height: 100%;" id="canvas" width="800" height="600"></canvas>
     <!-- Lobby Panel division is responsible for displaying the LobbyId the colour of the Player
-	and buttorns for starting the game.
+	and buttorns for starting the game. -->
 	<div id="lobbyPanel" -->
         <div>
 		    <!-- The name the users will use to join the same session which will be triggered by a spectator -->
