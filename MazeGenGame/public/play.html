@@ -25,6 +25,19 @@
                 alert(err);
             }
         }
+		 async function reset() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const lobby = urlParams.get('lobby') ?? "";
+                let data = await fetch("/lobby/reset?" + new URLSearchParams({ lobby: lobby }));
+                let json = await data.json();
+                if (json.error) {
+                    throw json.error;
+                }
+            } catch (err) {
+                alert(err);
+            }
+        }
        
     </script>
 </head>
@@ -42,7 +55,7 @@
             <span>You are</span>
             <span id="col"></span>
         </div>
-        <button id="startButton" onclick="javascript:start()" aria-label="Start the game">Start</button>
+        <button id="startButton" onclick="javascript:start()">Start</button>
        
     </div>
 	<!-- clock division is responsible for displaying game timer -->
