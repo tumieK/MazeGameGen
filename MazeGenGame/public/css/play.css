@@ -1,176 +1,169 @@
+/* Set styles for html and body to cover full height and width */
 html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: "Archivo", sans-serif;
+    margin: 0; /* Remove default margin */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Hide overflow */
+    font-family: "Archivo", sans-serif; /* Set font family */
+    background: linear-gradient(to bottom, red, black); /* Set background gradient from red to black */
 }
 
 @font-face {
-    font-family: 'agent_redregular';
-    src: url('fonts/agentred-webfont.woff2') format('woff2'),
-         url('fonts/agentred-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-
+    font-family: 'agent_redregular'; /* Define custom font */
+    src: url('fonts/agentred-webfont.woff2') format('woff2'), /* WOFF2 format */
+         url('fonts/agentred-webfont.woff') format('woff'); /* WOFF format */
+    font-weight: normal; /* Normal font weight */
+    font-style: normal; /* Normal font style */
 }
 
+/* Style for lobby text */
 #lobby {
-    color: rgb(44, 175, 44);
+    color: rgb(44, 175, 44); /* Set text color */
 }
 
-
+/* Lobby panel styles */
 #lobbyPanel {
-    height: 60px;
-    top: 0; left: 0; right: 0;
-    z-index: 10;
-    bottom: auto;
-    position: absolute;
-    background-color: white;
-    display: flex;
-    justify-content: space-between;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
+    height: 60px; /* Set height */
+    top: 0; left: 0; right: 0; /* Position at top */
+    z-index: 10; /* Place above other elements */
+    position: absolute; /* Absolute positioning */
+    background-color: white; /* Background color */
+    display: flex; /* Flexbox for layout */
+    justify-content: space-between; /* Space between items */
+    padding-left: 1rem; /* Padding */
+    padding-right: 1rem; /* Padding */
+    align-items: center; /* Center items */
+    font-weight: 700; /* Bold font */
+    font-size: 1.5rem; /* Font size */
 }
 
+/* Player color styling */
 #col {
-    text-shadow: 0 0 5px #0008;
+    text-shadow: 0 0 5px #0008; /* Text shadow for effect */
 }
 
+/* Start button styles */
 #startButton {
-    display: none;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    height: 45px;
-    width: 100px;
+    display: none; /* Hide by default */
+    position: absolute; /* Positioning */
+    top: 5px; 
+    right: 5px; 
+    height: 45px; 
+    width: 100px; 
 }
 
+/* Reset button styles */
 #resetButton {
-    display: none;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    height: 45px;
-    width: 100px;
+    display: none; /* Hide by default */
+    position: absolute; /* Positioning */
+    top: 5px; 
+    right: 5px; 
+    height: 45px; 
+    width: 100px; 
 }
 
+/* Player color visibility */
 #playerColour {
-    display: none;
+    display: none; /* Hide by default */
 }
 
+/* Button styles */
 button {
-    transition-duration: 0.3s;
-    box-shadow: 0px 5px 0px rgb(30, 117, 30);
-    background-color: rgb(44, 175, 44);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 30px;
-    border-radius: 0.5rem;
-    border-style: none;
-    font-size: large;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: bold;
-    cursor: pointer;
+    transition-duration: 0.3s; /* Transition duration */
+    box-shadow: 0px 5px 0px rgb(30, 117, 30); /* Shadow effect */
+    background-color: rgb(44, 175, 44); /* Background color */
+    color: white; /* Text color */
+    display: flex; /* Flexbox for layout */
+    justify-content: center; /* Center text */
+    align-items: center; /* Center vertically */
+    height: 30px; 
+    border-radius: 0.5rem; /* Rounded corners */
+    border-style: none; /* No border */
+    font-size: large; /* Large font */
+    cursor: pointer; /* Pointer cursor */
 }
 
+/* Button hover effects */
 button:hover {
-    transition-duration: 0.3s;
-    box-shadow: 0px 0px 0px rgb(46, 180, 46);
-    background-color: rgb(59, 218, 59);
-    transform: translateY(5px);
+    transition-duration: 0.3s; /* Transition duration */
+    box-shadow: 0px 0px 0px rgb(46, 180, 46); /* Shadow effect on hover */
+    background-color: rgb(59, 218, 59); /* Change background color */
+    transform: translateY(5px); /* Move down on hover */
 }
 
+/* Win screen styles */
 #winScreen {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    bottom: 0px;
-    right: 0px;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
+    position: absolute; /* Positioning */
+    left: 0px; 
+    top: 0px; 
+    bottom: 0px; 
+    right: 0px; 
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    display: flex; /* Flexbox for layout */
+    align-items: center; /* Center items vertically */
 }
 
+/* Font styling for win message */
 .font-whacky {
-    font-family: "agent_redregular", sans-serif;
-    text-align: center;
-    font-size: 3rem;
-    margin-bottom: 2rem;
+    font-family: "agent_redregular", sans-serif; /* Use custom font */
+    text-align: center; /* Center text */
+    font-size: 3rem; /* Font size */
+    margin-bottom: 2rem; /* Bottom margin */
 }
 
-#winScreen{
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 0.5rem;
-    text-align: center;
+/* Player score styling */
+#playerScores {
+    display: flex; /* Flexbox for layout */
+    flex-direction: column; /* Column layout */
+    row-gap: 1rem; /* Space between rows */
+    width: 100%; /* Full width */
+    max-width: 500px; /* Max width */
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
 }
 
-#playerScores{
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
-    width: 100%;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+/* Individual player score styling */
+.playerScore {
+    display: flex; /* Flexbox for layout */
+    background-color: rgb(240, 240, 240); /* Background color */
+    padding: 0.6rem; /* Padding */
+    border-radius: 5px; /* Rounded corners */
+    justify-content: space-between; /* Space between items */
+    align-items: center; /* Center vertically */
+    font-weight: bold; /* Bold font */
+    font-size: large; /* Large font size */
 }
 
-.playerScore{
-    display: flex;
-    background-color: rgb(240, 240, 240);
-    padding: 0.6rem;
-    border-radius: 5px;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    font-size: large;
-    /* div{
-        height: min-content;
-    } */
-}   
-
+/* Waiting text styling */
 #waitingText {
-    margin-top: 2rem;
+    margin-top: 2rem; /* Margin on top */
 }
 
+/* Clock panel styling */
 #clockPanel {
-    position: absolute;
-    top: 60px;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction:column;
-    align-items: end;
-    color: white;
+    position: absolute; /* Positioning */
+    top: 60px; 
+    right: 0; 
+    bottom: 0; 
+    display: flex; /* Flexbox for layout */
+    flex-direction: column; /* Column layout */
+    align-items: end; /* Align to end */
+    color: white; /* Text color */
 }
 
+/* Clock styling */
 .clock {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    /* background: conic-gradient(transparent 0deg 120deg, white 128deg 360deg); */
+    width: 64px; /* Width */
+    height: 64px; /* Height */
+    border-radius: 50%; /* Circular shape */
 }
 
+/* Clock wrapper styling */
 .clock-wrapper {
-    display: none;
-    flex-direction: row;
-    gap: 8px;
-    align-items: center;
-    text-wrap: nowrap;
-    position: absolute;
-    right: 8px;
+    display: none; /* Hide by default */
+    flex-direction: row; /* Row layout */
+    gap: 8px; /* Space between items */
+    align-items: center; /* Center vertically */
+    position: absolute; /* Positioning */
+    right: 8px; /* Position from right */
 }
