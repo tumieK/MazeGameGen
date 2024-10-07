@@ -47,7 +47,7 @@
     <canvas style="width: 100%; height: 100%;" id="canvas" width="800" height="600"></canvas>
     <!-- Lobby Panel division is responsible for displaying the LobbyId the colour of the Player
 	and buttorns for starting the game. -->
-	<div id="lobbyPanel" -->
+	<div id="lobbyPanel">
         <div>
 		    <!-- The name the users will use to join the same session which will be triggered by a spectator -->
             <span>Session Name: </span><span id="lobby"></span>
@@ -56,13 +56,13 @@
             <span>You are</span>
             <span id="col"></span>
         </div>
-        <button id="startButton" onclick="javascript:start()">Start</button>
+        <button id="startButton" onclick="start()">Start</button>
        
     </div>
 	<!-- clock division is responsible for displaying game timer -->
     <div id="clockPanel">
         <div id="0g-clock-wrapper" class="clock-wrapper" style="top: 8px;">
-            <h3>Zero-Gravity</h1>
+            <h3>Zero-Gravity</h3>
             <div id="0g-clock" class="clock" style="background-color: red;"></div>
         </div>
         
