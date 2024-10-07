@@ -1,95 +1,92 @@
-/* background */
-/* gl.clearColor(30/255, 21/255, 42/255, 1.0); */
+/* Background gradient for the entire page (red to black) */
+body {
+    background: linear-gradient(to bottom, red, black); /* Red to black gradient */
+    color: white; /* Set text color to white */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    height: 100vh; /* Full viewport height */
+    display: flex; /* Flexbox for centering content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
 
-/* backplate */
-/* drawObject(gl, 78/255, 103/255, 102/255, 0, board); */
-
-/* wall */
-/* drawObject(gl, 90/255, 177/255, 187/255, 2, matMul(board, wall)); */
-
-/* cap */
-/* drawObject(gl, 120/255, 241/255, 255/255, 0, matMul(board, matMul(wall, cap))); */
-
+/* Font-face for custom font 'agent_redregular' */
 @font-face {
     font-family: 'agent_redregular';
     src: url('fonts/agentred-webfont.woff2') format('woff2'),
          url('fonts/agentred-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
+
+/* Style for the main heading */
 h1 {
-    font-family: 'agent_redregular';
-    font-size: 5rem;
-    text-align: center;
+    font-family: 'agent_redregular'; /* Custom font */
+    font-size: 5rem; /* Large font size */
+    text-align: center; /* Centered text */
 }
 
-body {
-    background-color: rgb(30, 21, 41);
-    color: white;
-}
-
+/* Styling for the panel (form container) */
 .panel {
     margin-left: auto;
     margin-right: auto;
     max-width: 300px;
     border-radius: 0.5rem;
     padding: 1rem;
-    background-color: white;
-    color: black;
+    background-color: white; /* Panel background is white */
+    color: black; /* Text color inside panel is black */
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
+    row-gap: 1rem; /* Spacing between elements */
 
-    font-family: "Archivo", sans-serif;
-    text-align: center;
+    font-family: "Archivo", sans-serif; /* Font used in the panel */
+    text-align: center; /* Center the text inside */
 }
 
+/* Input field styling */
 input {
-    background-color: transparent;
-    color: black;
+    background-color: transparent; /* Transparent background */
+    color: black; /* Black text color */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 50px;
-    border-radius: 0.5rem;
+    height: 50px; /* Fixed height */
+    border-radius: 0.5rem; /* Rounded corners */
     border-style: solid;
-    font-size: large;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: bold;
-    border-width: 2px;
-    border-color: rgb(204, 204, 204);
-    text-align: center;
-    text-transform: uppercase;
+    font-size: large; /* Large font size */
+    font-weight: 700; /* Bold text */
+    border-width: 2px; /* Border thickness */
+    border-color: rgb(204, 204, 204); /* Light grey border */
+    text-align: center; /* Center text */
+    text-transform: uppercase; /* Uppercase text */
 }
 
+/* Button styling */
 button {
-    transition-duration: 0.3s;
-    background-color: rgb(51, 51, 51);
-    color: white;
+    transition-duration: 0.3s; /* Smooth transitions */
+    background-color: rgb(51, 51, 51); /* Dark background color */
+    color: white; /* White text */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 50px;
-    border-radius: 0.5rem;
-    border-style: none;
-    font-size: large;
-    box-shadow: 0px 5px 0px black;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: bold;
-    cursor: pointer;
+    height: 50px; /* Fixed height */
+    border-radius: 0.5rem; /* Rounded corners */
+    border-style: none; /* No border */
+    font-size: large; /* Large font size */
+    box-shadow: 0px 5px 0px black; /* Shadow effect */
+    font-weight: 700; /* Bold text */
+    cursor: pointer; /* Pointer cursor on hover */
 }
 
+/* Button hover effects */
 button:hover {
     transition-duration: 0.3s;
-    box-shadow: 0px 0px 0px rgb(30, 117, 30);
-    background-color: rgb(44, 175, 44);
-    transform: translateY(5px);
+    box-shadow: 0px 0px 0px rgb(30, 117, 30); /* Green shadow on hover */
+    background-color: rgb(44, 175, 44); /* Green background on hover */
+    transform: translateY(5px); /* Push down effect on hover */
 }
 
-
+/* Wavy animation for elements with the 'wavy' class */
 .wavy {
     animation-name: wavy;
     animation-duration: 2s;
@@ -98,15 +95,16 @@ button:hover {
     position: relative;
     top: 0;
     left: 0;
-  }
-  @keyframes wavy {
+}
+
+@keyframes wavy {
     0% {
-      top: 0px;
+        top: 0px;
     }
     50% {
-      top: -15px;
+        top: -15px;
     }
     100% {
-      top: 0px;
+        top: 0px;
     }
-  }
+}
