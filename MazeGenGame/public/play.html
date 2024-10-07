@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="css/play.css">
     <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <script src="main.js" type="module"></script>
-    <script>
+    <!-- Importing main.js as a module through a functions start(),
+      it will handle fetching data from server and game state -->
+     <!-- Function start() fetches data from server to start the game using the LobbyId -->
+    <script> 
         async function start() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -38,9 +41,14 @@
     </script>
 </head>
 <body>
+    <!-- setting canva size which i will use to handle the graphics of the game -->
     <canvas style="width: 100%; height: 100%;" id="canvas" width="800" height="600"></canvas>
+     <!-- Lobby Panel division is responsible for displaying the LobbyId the colour of the Player
+	and buttorns for starting the game.
+	<div id="lobbyPanel" -->
     <div id="lobbyPanel">
         <div>
+            <!-- The name the users will use to join the same session which will be triggered by a spectator -->
             <span>Session Name: </span><span id="lobby"></span>
         </div>
         <div id="playerColour">
@@ -49,12 +57,15 @@
         </div>
         <button id="startButton" onclick="start()">Start</button>
     </div>
+    <!-- clock division is responsible for displaying game timer -->
     <div id="clockPanel">
         <div id="0g-clock-wrapper" class="clock-wrapper" style="top: 8px;">
             <h3>Zero-Gravity</h3>
             <div id="0g-clock" class="clock" style="background-color: red;"></div>
         </div>
     </div>
+    <!-- wins screen division it is responsible for displaying a message when a player wins,along 
+	with a scoreboard of maximum of four players. -->
     <div id="winScreen">
         <div class="font-whacky">
             <span id="winPlayer">RED</span> <span>WINS!</span>
