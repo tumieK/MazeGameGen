@@ -9,7 +9,7 @@ html, body {
 }
 
  #canvas {
-    background: linear-gradient(to bottom, red, black); /* Set background gradient from red to black */
+    color: linear-gradient(to bottom, red, black); /* Set background gradient from red to black */
 }
 
 @font-face {
