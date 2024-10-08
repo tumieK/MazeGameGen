@@ -675,7 +675,7 @@ function draw(time) {
 
     drawObject(gl, 78/255, 103/255, 102/255, 0, board);
 
-    const cap = matMul(translate(0.0, 0.5, 0.0), matMul(rotX(Math.PI/2), scale(1.0, 0.005, 1.0)));
+    const cap = matMul(translate(1, 0.0, 0.0), matMul(rotX(Math.PI/2), scale(1.0, 0.005, 1.0)));
 
     let size = lobbyState.boardSize;
 
