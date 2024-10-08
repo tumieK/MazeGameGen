@@ -28,5 +28,5 @@ a wave like movement to text. -->
 <!-- This eventLister it is responsible for calling updateText function everytime a page is loadded,
     this is the text which will be animated and displayed on the first page of the game -->
 window.addEventListener('load', function () {
-    updateText("Maze Pro");
+    updateText("Maze Danger");
   })
