@@ -5,7 +5,7 @@ function updateText(text){
     let delay = 200;
     
     let h1 = document.getElementById("animated");
-<!-- Here i am splitting the name of the game Maze Pro into individual letters,and wrapp
+<!-- Here i am splitting the name of the game Maze Danger into individual letters,and wrapp
 each letter into a span element which will allow animation to be applied to each letter,
     and lastly join the elements into one string -->
         h1.innerHTML = text
