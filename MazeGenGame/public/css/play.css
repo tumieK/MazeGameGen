@@ -8,6 +8,10 @@ html, body {
     background: linear-gradient(to bottom, red, black); /* Set background gradient from red to black */
 }
 
+ body {
+    background: linear-gradient(to bottom, red, black); /* Set background gradient from red to black */
+}
+
 @font-face {
     font-family: 'agent_redregular'; /* Define custom font */
     src: url('fonts/agentred-webfont.woff2') format('woff2'), /* WOFF2 format */
