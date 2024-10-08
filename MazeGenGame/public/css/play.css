@@ -9,7 +9,7 @@ html, body {
 }
 #canvas{
     width: 100%; /* 100% of the lobby panel width */
-            height: 400px; /* Adjust the height */
+            height: 100%; /* Adjust the height */
             display: block;
             margin: 0 auto;
             border: 1px solid #000;
