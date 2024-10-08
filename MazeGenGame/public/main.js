@@ -664,7 +664,7 @@ function draw(time) {
     let loc = gl.getUniformLocation(program, "perspective");
     gl.uniformMatrix4fv(loc, false, perspective);
 
-    gl.clearColor(30/255, 21/255, 42/255, 1.0);
+    gl.clearColor(1, 0, 0, 0.5);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     rot = rot*4/5 + lobbyState.gravityAngle/5;
