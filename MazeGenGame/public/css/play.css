@@ -31,7 +31,8 @@ html, body {
     top: 0; left: 0; right: 0; /* Position at top */
     z-index: 10; /* Place above other elements */
     position: absolute; /* Absolute positioning */
-    background-color: white; /* Background color */
+    /*background-color: white;*/ /* Background color */
+    background: linear-gradient(to bottom, red, black); /* Set background gradient from red to black */
     display: flex; /* Flexbox for layout */
     justify-content: space-between; /* Space between items */
     padding-left: 1rem; /* Padding */
