@@ -99,13 +99,14 @@ button:hover {
 
 /* Win screen styles */
 #winScreen {
+    display:none;
     position: absolute; /* Positioning */
     left: 0px; 
     top: 0px; 
     bottom: 0px; 
     right: 0px; 
     background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-    display: flex; /* Flexbox for layout */
+    /*display: flex;*/ /* Flexbox for layout */
     align-items: center; /* Center items vertically */
 }
 
