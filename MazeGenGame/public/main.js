@@ -440,17 +440,21 @@ let playerPositions = {};
 let latestLobbyTime = 0;
 
 function main() {
+    /*Get the canvas element by its ID*/
     canvas = /**@type {HTMLCanvasElement | null}*/(document.getElementById("canvas"));
+   /*Initialise the WebGL context from the canvas,Im using this since i want my maze to be 3D*/
     gl = canvas?.getContext("webgl");
-
+    /*Check if WebGL is supported*/
     if (!gl) { throw "Failed to initialise canvas. Your browser or device may not support it."; }
-
+   /*Enable depth testing to handle 3D object overlap properly*/
     gl.enable(gl.DEPTH_TEST);
-
+   /*Set the background color to red using RGBA Format*/
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    /*Compile and link the WebGL program(shaders)*/
     compileProgram(gl);
-
+    /*Enable the vertex attribute at index 0*/
     gl.enableVertexAttribArray(0);
-
+    /*Create a buffer and bind it to store vertex position for a quad */
     vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -462,9 +466,9 @@ function main() {
         0.5, 0.5, 0.0,
     ]),
     gl.STATIC_DRAW);
-
+   /*Define how to read the vertex data(3 values per vertex,floating point)*/
     gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
-
+   /*Check if the device supports orientation events*/
     if (window.DeviceOrientationEvent) {
         window.addEventListener('devicemotion', (event) => {
             const a = event.accelerationIncludingGravity
@@ -490,22 +494,22 @@ function main() {
     } else {
         throw "Doesn't support device orientation.";
     }
-
+   /*Initialize the ball if the player exists*/
     if (player) {
         ball = new Sphere(new Vec2(-0.05, 0.4), 0.025);
     }
-
+   /*Update the lobby element with the lobby ID*/
     let lobbyElem = document.getElementById("lobby");
     if (lobbyElem) {
         lobbyElem.innerText = lobbyId+"";
     }
-
+    /*Start polling for updates*/
     poll();
-
+   /*Request a wake lock to keep the screen on if supported*/
     if ('wakeLock' in navigator) {
         navigator.wakeLock.request();
     }
-
+  /*Start the rendering loop*/
     requestAnimationFrame(draw);
 }
 
