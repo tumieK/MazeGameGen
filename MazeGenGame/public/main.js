@@ -449,6 +449,7 @@ function main() {
    /*Enable depth testing to handle 3D object overlap properly*/
     gl.enable(gl.DEPTH_TEST);
    /*Set the background color to red using RGBA Format*/
+    gl.clearColor(1.0,0.0,0.0,1.0);//Red colour with full opacity
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     /*Compile and link the WebGL program(shaders)*/
     compileProgram(gl);
