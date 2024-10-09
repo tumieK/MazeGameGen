@@ -612,7 +612,8 @@ function draw(time) {
                     playerElem.innerText = players[lobbyState.winner].username;
                 }
             }
-    
+            let winModal = document.getElementById("btnWin");
+            winModal.click();
             let audio = new Audio('/victory.mp3');
             audio.play();
         }
