@@ -1,88 +1,34 @@
-// @ts-check
-
 class Vec2 {
-    /**
-     * @param {number} x
-     * @param {number} y
-     */
-    constructor(x, y) {
-        /** @type {number} */
-        this.x = x;
-        /** @type {number} */
+   constructor(x, y) {
+      this.x = x;
         this.y = y;
     }
-
-    /**
-     * @returns {number}
-     */
     length() {
         return Math.sqrt(this.x*this.x + this.y*this.y);
     }
-
-    /**
-     * @param {Vec2} other
-     * @returns {number}
-     */
     dot(other) {
         return this.x * other.x + this.y * other.y;
-    }
-
-    /**
-     * @param {Vec2} other
-     * @returns {Vec2}
-     */
     project(other) {
         return other.mul(this.dot(other) / other.length());
     }
-
-    /**
-     * @param {Vec2} other
-     * @returns {Vec2}
-     */
     add(other) {
         return new Vec2(this.x + other.x, this.y + other.y);
     }
-
-    /**
-     * @param {Vec2} other
-     * @returns {Vec2}
-     */
     sub(other) {
         return new Vec2(this.x - other.x, this.y - other.y);
     }
-
-    /**
-     * @param {number} other
-     */
     mul(other) {
         return new Vec2(this.x * other, this.y * other);
     }
-
-    /**
-     * @param {number} other
-     */
     div(other) {
         return new Vec2(this.x / other, this.y / other);
     }
 }
-
 class AABB {
-    /**
-     * @param {Vec2} min
-     * @param {Vec2} max
-     */
     constructor(min, max) {
-        /** @type {Vec2} */
         this.min = min;
-        /** @type {Vec2} */
         this.max = max;
     }
-
-    // Citation: https://gamedev.stackexchange.com/questions/156870/how-do-i-implement-a-aabb-sphere-collision
-    /**
-     * @param {Vec2} p
-     * @returns {number}
-     */
     squareDistPoint(p) {
         let sqrDist = 0;
 
@@ -90,27 +36,15 @@ class AABB {
         if (p.x > this.max.x) sqrDist += (p.x - this.max.x) * (p.x - this.max.x);
         if (p.y < this.min.y) sqrDist += (this.min.y - p.y) * (this.min.y - p.y);
         if (p.y > this.max.y) sqrDist += (p.y - this.max.y) * (p.y - this.max.y);
-
         return sqrDist;
     }
 
     // Citation: https://gamedev.stackexchange.com/questions/156870/how-do-i-implement-a-aabb-sphere-collision
-    /**
-     * 
-     * @param {Sphere} sphere
-     * @returns {boolean}
-     */
     collideSphere(sphere) {
         const sqrDist = this.squareDistPoint(sphere.centre);
         return sqrDist <= sphere.radius*sphere.radius;
     }
-
     // Citation: https://gamedev.stackexchange.com/questions/156870/how-do-i-implement-a-aabb-sphere-collision
-    /**
-     * 
-     * @param {Vec2} p
-     * @returns {Vec2}
-     */
     closestPoint(p) {
         let qx = 0;
         let qy = 0;
@@ -130,62 +64,37 @@ class AABB {
 }
 
 class Sphere {
-    /**
-     * @param {Vec2} centre
-     * @param {number} radius
-     */
     constructor(centre, radius) {
-        /** @type {Vec2} */
         this.centre = centre;
-        /** @type {number} */
         this.radius = radius;
     }
 }
-
 const urlParams = new URLSearchParams(window.location.search);
 const lobbyId = urlParams.get('lobby') ?? "";
 const player = urlParams.get('player');
-
 const wallHeight = 1.0;
-
 const ballColours = [
-    [255, 0, 0],
-    [255, 255, 0],
-    [0, 255, 0],
-    [0, 0, 255],
+    [0, 0, 0],//Black
+    [255, 255, 0],//Yellow
+    [0, 255, 0],//Green
+    [0, 0, 255],//Blue
 ];
-
 const ballColourNames = [
-"RED","YELLOW","GREEN","BLUE"
+"BLACK","YELLOW","GREEN","BLUE"
 ];
-
 const clock0gWrapper = document.getElementById("0g-clock-wrapper");
 const clock0g = document.getElementById("0g-clock");
-
-/**@type {HTMLCanvasElement | null | undefined}*/
 let canvas;
-/**@type {WebGLRenderingContext | null | undefined}*/
 let gl;
-/**@type {WebGLProgram | null | undefined} */
 let program;
-/**@type {WebGLBuffer | null | undefined} */
 let vertexBuffer;
-/**@type {Float32Array | undefined} */
 let perspective;
-
 const IDENTITY = new Float32Array([
     1,0,0,0,
     0,1,0,0,
     0,0,1,0,
     0,0,0,1,
 ]);
-
-/**
- * 
- * @param {Float32Array} a
- * @param {Float32Array} b
- * @returns {Float32Array}
- */
 function matMul(a, b) {
     let out = new Float32Array(16);
     // col
@@ -197,19 +106,10 @@ function matMul(a, b) {
     }
     return out;
 }
-
-/**
- * @param {number} fovy
- * @param {number} aspect
- * @param {number} near
- * @param {number} far
- * @returns {Float32Array}
- */
 function genPerspective(fovy, aspect, near, far) {
     // Citation: https://webglfundamentals.org/webgl/lessons/webgl-3d-perspective.html
     var f = Math.tan(Math.PI * 0.5 - 0.5 * fovy);
     var rangeInv = 1.0 / (near - far);
- 
     return new Float32Array([
       f / aspect, 0, 0, 0,
       0, f, 0, 0,
@@ -217,13 +117,6 @@ function genPerspective(fovy, aspect, near, far) {
       0, 0, near * far * rangeInv * 2, 0
     ]);
 }
-
-/**
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {Float32Array}
- */
 function scale(x, y=x, z=x) {
     return new Float32Array([
       x, 0, 0, 0,
@@ -232,13 +125,6 @@ function scale(x, y=x, z=x) {
       0, 0, 0, 1,
     ]);
 }
-
-/**
- * @param {number} x
- * @param {number} y
- * @param {number} z
- * @returns {Float32Array}
- */
 function translate(x, y, z) {
     return new Float32Array([
       1, 0, 0, 0,
@@ -247,11 +133,6 @@ function translate(x, y, z) {
       x, y, z, 1,
     ]);
 }
-
-/**
- * @param {number} angle
- * @returns {Float32Array}
- */
 function rotX(angle) {
     return new Float32Array([
       1, 0, 0, 0,
@@ -260,11 +141,6 @@ function rotX(angle) {
       0, 0, 0, 1,
     ]);
 }
-
-/**
- * @param {number} angle
- * @returns {Float32Array}
- */
 function rotY(angle) {
     return new Float32Array([
       Math.cos(angle), 0, -Math.sin(angle), 0,
@@ -273,11 +149,6 @@ function rotY(angle) {
       0, 0, 0, 1,
     ]);
 }
-
-/**
- * @param {number} angle
- * @returns {Float32Array}
- */
 function rotZ(angle) {
     return new Float32Array([
       Math.cos(angle), -Math.sin(angle), 0, 0,
@@ -286,57 +157,39 @@ function rotZ(angle) {
       0, 0, 0, 1,
     ]);
 }
-
-/**
- * @param {WebGLRenderingContext} gl
- */
 function compileProgram(gl) {
     program = gl.createProgram();
     if (!program) { throw "Failed to create program."; }
-
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
     if (!vertexShader) { throw "Failed to create vertex shader."; }
-    
     gl.shaderSource(vertexShader, `
     #version 100
-    
     attribute vec3 position;
-    
     uniform mat4 perspective;
     uniform mat4 model;
-
     varying vec3 v_pos;
-
     void main() {
         v_pos = position;
         gl_Position = perspective * model * vec4(position, 1.0);
     }
     `);
     gl.compileShader(vertexShader);
-
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
         const info = gl.getShaderInfoLog(vertexShader);
         console.error(info);
         throw "Failed to compile vertex shader.";
     }
-
     const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
     if (!fragShader) { throw "Failed to create fragment shader."; }
-    
     gl.shaderSource(fragShader, `
     #version 100
-
     precision highp float;
-
     uniform vec3 colour;
     uniform int render_mode;
     uniform float time;
-
     varying vec3 v_pos;
-
     float f(float H, float S, float V, float n) {
         float k = n + H/60.0;
-
         for (int i = 0; i < 10; i++) {
             if (k >= 6.0) {
                 k -= 6.0;
@@ -351,7 +204,6 @@ function compileProgram(gl) {
     vec3 hsvToRgb(float H, float S, float V) {
         return vec3(f(H, S, V, 5.0), f(H, S, V, 3.0), f(H, S, V, 1.0));
     }
-
     void main() {
         vec4 final = vec4(0.0);
         if (render_mode == 0) {
@@ -393,52 +245,19 @@ function compileProgram(gl) {
         throw "Failed to link program.";
     }
 }
-
 let lastWidth;
 let lastHeight;
-
-// let ball = new Sphere(new Vec2(-0.05, 0.05), 0.025);
-/** @type {Sphere | undefined} */
 let ball;
 let ballVel = new Vec2(0, 0);
-
 let rot = 0;
 let targetRot = 0;
 let acc = new Vec2(0, 0);
-
 let lastTime;
 let dt = 0;
-
 let currentFrame = 0;
-
-/** @type {undefined | {
- *      id: string,
- *      status: 'waiting' | 'playing' | 'finished',
- *      gravityAngle: number,
- *      winner: string,
- *      boardSize: number,
- *      walls: [{t: boolean, l: boolean}],
- *      players: Object.<string, {
- *          playerId: string,
- *          username: string,
- *          gravityAngle: number,
- *          x: number, y: number,
- *          vx: number, vy: number,
- *          lastPoll: number,
- *          score: number,
- *      }>,
- *      powerUps: [{x: number, y: number, skill: '0g', holder: string, timeActivated: number}]
- * }} */
 let lobbyState;
-/**
- * @type {Object.<string, {
- *     playerId: string,
-*      x: number, y: number,
-*  }>}
- */
 let playerPositions = {};
 let latestLobbyTime = 0;
-
 function main() {
     /*Get the canvas element by its ID*/
     canvas = /**@type {HTMLCanvasElement | null}*/(document.getElementById("canvas"));
@@ -530,24 +349,14 @@ function drawObject(gl, r, g, b, renderMode, model) {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
-
-
 let lobbyElem = document.getElementById("lobby");
 let colourElem = document.getElementById("col");
 let winElem = document.getElementById("winScreen");
-
 let lastStatus = 'waiting';
-
-/**
- * @param {DOMHighResTimeStamp} time
- */
 function draw(time) {
     if (!lastTime) lastTime = time;
-    
     dt = Math.min((time - lastTime) / 1000.0, 1/30.0);
     lastTime = time;
-    
-
     if (!canvas || !gl || !vertexBuffer || !program) {
         return;
     }
@@ -555,11 +364,9 @@ function draw(time) {
         requestAnimationFrame(draw);
         return;
     }
-    
     if (currentFrame % 5 == 0) {
         poll();
     }
-
     if (colourElem && player && lobbyState) {
         let i = Object.keys(lobbyState.players).findIndex(p => p == player);
         const colour = ballColours[i];
@@ -571,7 +378,6 @@ function draw(time) {
             colourDiv.style.display = "block";
         }
     }
-
     if (player && ball && lobbyState.status == "waiting") {
         let index = Object.keys(lobbyState.players).findIndex(p => p === player);
         ball.centre.y = 0.5 - 0.5 / lobbyState.boardSize;
@@ -604,7 +410,6 @@ function draw(time) {
                     }
                 }
             }
-    
             if (playerElem) {
                 let i = Object.keys(lobbyState.players).findIndex(p => p === lobbyState?.winner);
                 if(players[lobbyState.winner]){
@@ -612,7 +417,6 @@ function draw(time) {
                     playerElem.innerText = players[lobbyState.winner].username;
                 }
             }
-    
             let audio = new Audio('/victory.mp3');
             audio.play();
         }
@@ -640,52 +444,34 @@ function draw(time) {
             resetElem.style.display = "none";
         }
     }
-
     currentFrame += 1;
-
     let width = window.innerWidth * window.devicePixelRatio;
-    let height = window.innerHeight * window.devicePixelRatio;
-    
+    let height = window.innerHeight * window.devicePixelRatio;  
     canvas.width = width;
     canvas.height = height;
-
     if (!perspective || lastWidth !== width || lastHeight !== height) {
         perspective = genPerspective(Math.max(Math.atan(height / width) * 1.5, 1.0), width / height, 0.1, 100.0);
         lastWidth = width;
         lastHeight = height;
     }
-
     gl.viewport(0, 0, width, height);
-
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    // perspective matrix
     let loc = gl.getUniformLocation(program, "perspective");
     gl.uniformMatrix4fv(loc, false, perspective);
-
     gl.clearColor(0.5, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     rot = rot*4/5 + lobbyState.gravityAngle/5;
-
     const boardRot = rotZ(player ? (rot - targetRot) : rot);
-
     const board = matMul(translate(0, 0, -1.5), boardRot);
-
     drawObject(gl, 78/255, 103/255, 102/255, 0, board);
-
     const cap = matMul(translate(0.0, 0.5, 0.0), matMul(rotX(Math.PI/2), scale(1.0, 0.005, 1.0)));
-
     let size = lobbyState.boardSize;
-
     let wh = wallHeight / size;
-
     for (let i = 0; i < size+1; i++) {
         for (let j = 0; j < size+1; j++) {
             if (i < size && lobbyState.walls[j+(size+1)*i].t) {
-                const wall = matMul(translate(-0.5 + 0.5/size + i/size, 0.5 - j/size, wh/2), matMul(rotX(Math.PI/2), scale(1/size, wh, 1.0)));
-                
+                const wall = matMul(translate(-0.5 + 0.5/size + i/size, 0.5 - j/size, wh/2), matMul(rotX(Math.PI/2), scale(1/size, wh, 1.0)));   
                 // wall
                 drawObject(gl, 90/255, 177/255, 187/255, 2, matMul(board, wall));
 
@@ -704,7 +490,6 @@ function draw(time) {
             }
         }
     }
-
     let zeroGs = lobbyState.powerUps.filter(powerUp => powerUp.holder === player && powerUp.skill === '0g');
     if (!zeroGs.length && clock0gWrapper) {
         clock0gWrapper.style.display = "none";
@@ -804,13 +589,6 @@ function draw(time) {
         // ball
         const colour = ballColours[i];
         drawObject(gl, colour[0]/255, colour[1]/255, colour[2]/255, 1, ballModel);
-
-        // if (lobbyState.status === 'playing') {
-        //     p.x += p.vx * dt;
-        //     p.y += p.vy * dt;
-        //     p.vx *= 0.8;
-        //     p.vy *= 0.8;
-        // }
     }
 
     lastStatus = lobbyState.status;
@@ -819,12 +597,6 @@ function draw(time) {
 }
 
 const extendBox = 0.25;
-
-/**
- * @param {number} dt
- * @param {number | undefined} until
- * @returns 
- */
 function runCollisions(dt, until=undefined) {
     if (!ball || !lobbyState) return;
 
