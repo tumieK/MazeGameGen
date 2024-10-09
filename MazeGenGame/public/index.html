@@ -47,12 +47,18 @@
     </script>
 </head>
 <body>
-    <h1 id="animated">Maze Danger</h1>
-    <div class="panel"> <!--A panel for the lobby and username input -->
-        <button onclick="javascript:newLobby()">SPECTATOR</button>
-        <input type="text" name="lobby" id="lobby" placeholder="enter Lobby ID" maxlength="6" minlength="6">
-        <input type="text" name="uname" id="uname" placeholder="Enter Username" maxlength="12" minlength="2">
-        <button onclick="javascript:joinLobby()">PLAYER</button>
+    <div class="row">
+        <div class="col-md-5">
+            <h1 id="animated">Maze Danger</h1>        
+        </div>
+        <div class="col-md-5">
+          <div class="panel"> <!--A panel for the lobby and username input -->
+                <button onclick="javascript:newLobby()">SPECTATOR</button>
+                <input type="text" name="lobby" id="lobby" placeholder="enter Lobby ID" maxlength="6" minlength="6">
+                <input type="text" name="uname" id="uname" placeholder="Enter Username" maxlength="12" minlength="2">
+                <button onclick="javascript:joinLobby()">PLAYER</button>
+            </div>  
+        </div>
     </div>
 </body>
 </html>
