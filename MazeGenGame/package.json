@@ -1,12 +1,12 @@
 {
   "name": "Maze Danger",
   "version": "1.0.0",
-  "description": "",
+  "description": "It is a game thatallows maximum of 4 players with a winning condition of the first to make it out of the maze.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "",
+  "author": "Itumeleng Esther Khaka",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2"
