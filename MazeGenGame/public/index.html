@@ -8,37 +8,37 @@
     <link rel="stylesheet" href="css/index.css">
     <script src="textanim.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">    <script>
-      <!-- Function to create a new lobby-->
+      /*Function to create a new lobby*/
         async function newLobby() {
             try {
-                let data = await fetch("/lobby/create");<!--Fetches data from the server to create a lobby -->
-                let lobby = await data.json();<!-- Converts the response to JSON -->
-                    <!--Redirects to the play page with the lobby ID as a query parameter -->
+                let data = await fetch("/lobby/create");/*Fetches data from the server to create a lobby */
+                let lobby = await data.json();/*Converts the response to JSON */
+                    /*Redirects to the play page with the lobby ID as a query parameter */
                 window.location = "/play.html?" + new URLSearchParams({ lobby: lobby.id });
             } catch (err) {
-                alert(err);<!--Displays an error message if the lobby creation fails -->
+                alert(err);/*Displays an error message if the lobby creation fails */
             }
         }
-       <!-- Function to join an existing lobby-->
+       /*Function to join an existing lobby*/
         async function joinLobby() {
             try {
-                let t = document.getElementById("lobby")?.value.toUpperCase().trim();<!--Gets the lobby ID input and formats it -->
-                let name = document.getElementById("uname")?.value.toUpperCase().trim();<!--Gets the username input and formats it -->
+                let t = document.getElementById("lobby")?.value.toUpperCase().trim();/*Gets the lobby ID input and formats it */
+                let name = document.getElementById("uname")?.value.toUpperCase().trim();/*Gets the username input and formats it */
 
-               <!--Validate the lobby ID and username -->
+               /*Validate the lobby ID and username */
                 if (t.length != 6) {
                     throw "Lobby ID must be 6 letters";
                 }
                 if(name.length === 0) {
                     throw "Player must have a username";
                 }
-                <!--Fetches data from the server to join the lobby -->
+                /*Fetches data from the server to join the lobby */
                 let data = await fetch("/lobby/join?" + new URLSearchParams({ lobby: t, username: name }));
                 let json = await data.json();
                 if (json.error) {
                     throw json.error;
                 }
-                <!--Redirects to the play page with the lobby ID and player ID as query parameters-->
+                /*Redirects to the play page with the lobby ID and player ID as query parameters*/
                 window.location = "play.html?" + new URLSearchParams({ lobby: json.lobby.id, player: json.player });
             } catch (err) {
                 alert(err);
