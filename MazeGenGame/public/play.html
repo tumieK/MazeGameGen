@@ -56,12 +56,6 @@
             <span>You are</span>
             <span id="col"></span>
         </div>
-        <div class="invisible">
-            <!-- Button trigger modal -->
-            <button id="btnWin" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-              Launch static backdrop modal
-            </button>
-        </div>
         <button id="startButton" onclick="start()">Start</button>
     </div>
     <!-- Clock panel for displaying game timer -->
@@ -75,8 +69,13 @@
     <div id="winScreen">
         
     </div>
-
-    <!-- Modal -->
+    <div class="invisible">
+        <!-- Button trigger modal -->
+            <button id="btnWin" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                 Launch static backdrop modal
+            </button>
+    </div>
+<!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -109,8 +108,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-dark" data-bs-dismiss="modal" href="index.html">Restart</button>
-        <button id="resetButton" type="button" class="btn btn-danger" onclick="reset()>Reset</button>
+        <a class="btn btn-dark" data-bs-dismiss="modal" href="index.html">Restart</>
+        <button id="resetButton" class="btn btn-danger" onclick="reset()>Reset</button>
       </div>
     </div>
   </div>
