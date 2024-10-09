@@ -1,7 +1,7 @@
 {
   "name": "Maze Danger",
   "version": "1.0.0",
-  "description": "It is a game thatallows maximum of 4 players with a winning condition of the first to make it out of the maze.",
+  "description": "It is a game that allows maximum of 4 players with a winning condition of the first to make it out of the maze.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
