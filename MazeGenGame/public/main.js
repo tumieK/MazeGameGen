@@ -182,47 +182,55 @@ const ballColours = [
 const ballColourNames = [
 "BLACK","YELLOW","GREEN","BLUE"
 ];
-
+// HTML Elements that wrap the clock for a 0g (zero-gravity) power-up feature
 const clock0gWrapper = document.getElementById("0g-clock-wrapper");
 const clock0g = document.getElementById("0g-clock");
 
 /**@type {HTMLCanvasElement | null | undefined}*/
+// Declare a variable for the WebGL canvas, which will be used for rendering
 let canvas;
 /**@type {WebGLRenderingContext | null | undefined}*/
+// Declare a variable to hold the WebGL context, which allows drawing in 3D
 let gl;
 /**@type {WebGLProgram | null | undefined} */
+// Declare a variable for the WebGL program, which contains vertex and fragment shaders
 let program;
 /**@type {WebGLBuffer | null | undefined} */
+// Declare a buffer to store vertex data (i.e., the points in space used to render shapes)
 let vertexBuffer;
 /**@type {Float32Array | undefined} */
+// Declare an array for perspective matrix used in 3D transformations
 let perspective;
 
+// The identity matrix is used as the default transformation matrix (no changes)
 const IDENTITY = new Float32Array([
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1,
+    1,0,0,0,// First column of the matrix
+    0,1,0,0,// Second column
+    0,0,1,0,// Third column
+    0,0,0,1,// Fourth column
 ]);
 
 /**
- * 
+ * Matrix multiplication function: multiplies two 4x4 matrices
  * @param {Float32Array} a
  * @param {Float32Array} b
  * @returns {Float32Array}
  */
 function matMul(a, b) {
-    let out = new Float32Array(16);
-    // col
-    for (let i = 0; i < 4; i++) {
-        // row
+    let out = new Float32Array(16);// Create an array to store the result
+    // Multiply columns and rows of matrices `a` and `b`
+    for (let i = 0; i < 4; i++) {// Iterate through each column
+        // Iterate through each row
         for (let j = 0; j < 4; j++) {
+			 // Perform matrix multiplication for each element
             out[i + j*4] = a[i]*b[4*j] + a[i+4]*b[4*j+1] + a[i+8]*b[4*j+2] + a[i+12]*b[4*j+3];
         }
     }
-    return out;
+    return out; // Return the resulting matrix
 }
 
 /**
+ * Generates a perspective matrix to simulate 3D space in WebGL
  * @param {number} fovy
  * @param {number} aspect
  * @param {number} near
@@ -230,19 +238,22 @@ function matMul(a, b) {
  * @returns {Float32Array}
  */
 function genPerspective(fovy, aspect, near, far) {
+	// Calculate the perspective projection (how things shrink as they move away)
     // Citation: https://webglfundamentals.org/webgl/lessons/webgl-3d-perspective.html
-    var f = Math.tan(Math.PI * 0.5 - 0.5 * fovy);
-    var rangeInv = 1.0 / (near - far);
- 
+    var f = Math.tan(Math.PI * 0.5 - 0.5 * fovy);// Focus factor for field of view
+    var rangeInv = 1.0 / (near - far);// Inverted range between near and far planes
+    
+	// Return the perspective matrix
     return new Float32Array([
-      f / aspect, 0, 0, 0,
-      0, f, 0, 0,
-      0, 0, (near + far) * rangeInv, -1,
-      0, 0, near * far * rangeInv * 2, 0
+      f / aspect, 0, 0, 0,// Scale x based on aspect ratio
+      0, f, 0, 0,          // Scale y based on field of view
+      0, 0, (near + far) * rangeInv, -1, // Perspective depth scaling
+      0, 0, near * far * rangeInv * 2, 0  // Perspective division and depth
     ]);
 }
 
 /**
+ * Creates a scaling matrix to make objects bigger or smaller in x, y, and z axes
  * @param {number} x
  * @param {number} y
  * @param {number} z
@@ -250,14 +261,15 @@ function genPerspective(fovy, aspect, near, far) {
  */
 function scale(x, y=x, z=x) {
     return new Float32Array([
-      x, 0, 0, 0,
-      0, y, 0, 0,
-      0, 0, z, 0,
-      0, 0, 0, 1,
+      x, 0, 0, 0,// Scale x-axis
+      0, y, 0, 0,// Scale y-axis
+      0, 0, z, 0,// Scale z-axis
+      0, 0, 0, 1, // No scaling in w-axis
     ]);
 }
 
 /**
+ * Creates a translation matrix to move objects in 3D space
  * @param {number} x
  * @param {number} y
  * @param {number} z
@@ -265,85 +277,90 @@ function scale(x, y=x, z=x) {
  */
 function translate(x, y, z) {
     return new Float32Array([
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      x, y, z, 1,
+      1, 0, 0, 0,// No change to x scale
+      0, 1, 0, 0,// No change to y scale
+      0, 0, 1, 0,// No change to z scale
+      x, y, z, 1, // Translation vector (x, y, z)
     ]);
 }
 
 /**
+ * Creates a rotation matrix for rotating around the X-axis
  * @param {number} angle
  * @returns {Float32Array}
  */
 function rotX(angle) {
     return new Float32Array([
-      1, 0, 0, 0,
-      0, Math.cos(angle), Math.sin(angle), 0,
-      0, -Math.sin(angle), Math.cos(angle), 0,
-      0, 0, 0, 1,
+      1, 0, 0, 0,// No change to x-axis
+      0, Math.cos(angle), Math.sin(angle), 0,// Rotate in the y-z plane
+      0, -Math.sin(angle), Math.cos(angle), 0,// Rotate in the z-y plane
+      0, 0, 0, 1,// No change to w-axis
     ]);
 }
 
 /**
+ * Creates a rotation matrix for rotating around the Y-axis
  * @param {number} angle
  * @returns {Float32Array}
  */
 function rotY(angle) {
     return new Float32Array([
-      Math.cos(angle), 0, -Math.sin(angle), 0,
-      0, 1, 0, 0,
-      Math.sin(angle), 0, Math.cos(angle), 0,
-      0, 0, 0, 1,
+      Math.cos(angle), 0, -Math.sin(angle), 0,// Rotate in the x-z plane
+      0, 1, 0, 0,// No change to y-axis
+      Math.sin(angle), 0, Math.cos(angle), 0,// Rotate in the z-x plane
+      0, 0, 0, 1, // No change to w-axis
     ]);
 }
 
 /**
+ * Creates a rotation matrix for rotating around the Z-axis
  * @param {number} angle
  * @returns {Float32Array}
  */
 function rotZ(angle) {
     return new Float32Array([
-      Math.cos(angle), -Math.sin(angle), 0, 0,
-      Math.sin(angle), Math.cos(angle), 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1,
+      Math.cos(angle), -Math.sin(angle), 0, 0,// Rotate in the x-y plane
+      Math.sin(angle), Math.cos(angle), 0, 0,// Rotate in the y-x plane
+      0, 0, 1, 0,// No change to z-axis
+      0, 0, 0, 1,// No change to w-axis
     ]);
 }
 
 /**
+ * Compiles the WebGL program containing the vertex and fragment shaders
  * @param {WebGLRenderingContext} gl
  */
 function compileProgram(gl) {
+	// Create a program to store shaders
     program = gl.createProgram();
     if (!program) { throw "Failed to create program."; }
-
+    // Create and compile the vertex shader (handles positioning of vertices)
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
     if (!vertexShader) { throw "Failed to create vertex shader."; }
     
     gl.shaderSource(vertexShader, `
     #version 100
     
-    attribute vec3 position;
+    attribute vec3 position;// Position of the vertex
     
-    uniform mat4 perspective;
-    uniform mat4 model;
+    uniform mat4 perspective;// Perspective matrix for 3D projection
+    uniform mat4 model;// Model matrix for object transformation
 
-    varying vec3 v_pos;
+    varying vec3 v_pos;// Varying variable to pass to fragment shader
 
     void main() {
-        v_pos = position;
-        gl_Position = perspective * model * vec4(position, 1.0);
+        v_pos = position;// Pass vertex position to fragment shader
+        gl_Position = perspective * model * vec4(position, 1.0);// Calculate final vertex position
     }
     `);
-    gl.compileShader(vertexShader);
-
+    gl.compileShader(vertexShader);// Compile the vertex shader
+    // Check for errors in the vertex shader compilation
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
         const info = gl.getShaderInfoLog(vertexShader);
         console.error(info);
         throw "Failed to compile vertex shader.";
     }
-
+    // Create and compile the fragment shader (handles color of each pixel)
     const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
     if (!fragShader) { throw "Failed to create fragment shader."; }
     
