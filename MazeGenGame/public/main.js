@@ -734,41 +734,47 @@ function draw(time) {
     const board = matMul(translate(0, 0, -1.5), boardRot);
     // Draw the game board
     drawObject(gl, 78/255, 103/255, 102/255, 0, board);
-
+    // The 'cap' is the small top part of the wall, used to cap the edges of the wall structure.
+   // It's defined as a transformation matrix with translation, rotation, and scaling applied to it.
     const cap = matMul(translate(0.0, 0.5, 0.0), matMul(rotX(Math.PI/2), scale(1.0, 0.005, 1.0)));
 
-    let size = lobbyState.boardSize;
+    let size = lobbyState.boardSize;// Fetching the size of the game board.
 
-    let wh = wallHeight / size;
-
+    let wh = wallHeight / size;// Wall height relative to the size of the board.
+    // Loop through each grid cell and check if there are walls to draw.
     for (let i = 0; i < size+1; i++) {
         for (let j = 0; j < size+1; j++) {
+			// Check if there's a top wall at the current position (i, j)
             if (i < size && lobbyState.walls[j+(size+1)*i].t) {
+				// Define a transformation matrix for the wall and its position
                 const wall = matMul(translate(-0.5 + 0.5/size + i/size, 0.5 - j/size, wh/2), matMul(rotX(Math.PI/2), scale(1/size, wh, 1.0)));
                 
-                // wall
+                // Draw the wall with a specific color (RGB)
                 drawObject(gl, 90/255, 177/255, 187/255, 2, matMul(board, wall));
 
-                // cap
+                // Draw the cap for the wall
                 drawObject(gl, 120/255, 241/255, 255/255, 0, matMul(board, matMul(wall, cap)));
             }
-
+            // Check if there's a left wall at the current position (i, j)
             if (j < size && lobbyState.walls[j+(size+1)*i].l) {
+				// Define the transformation matrix for the wall and its position
                 const wall = matMul(translate(-0.5 + i/size, 0.5 - 0.5/size - j/size, wh/2), matMul(rotZ(Math.PI/2), matMul(rotX(Math.PI/2), scale(1/size, wh, 1.0))));
                 
-                // wall
+                // Draw the wall with the same color
                 drawObject(gl, 90/255, 177/255, 187/255, 2, matMul(board, wall));
 
-                // cap
+                 // Draw the cap for this wall
                 drawObject(gl, 120/255, 241/255, 255/255, 0, matMul(board, matMul(wall, cap)));
             }
         }
     }
-
+    // Handling power-ups with the '0g' (zero gravity).
     let zeroGs = lobbyState.powerUps.filter(powerUp => powerUp.holder === player && powerUp.skill === '0g');
-    if (!zeroGs.length && clock0gWrapper) {
+    // Hide the '0g' power-up display if none are active.
+	if (!zeroGs.length && clock0gWrapper) {
         clock0gWrapper.style.display = "none";
     }
+	// Sort zero gravity power-ups by the time they were activated and update the display.
     zeroGs.sort((a,b) => a.timeActivated - b.timeActivated);
     for (let i = 0; i < zeroGs.length; i++) {
         if (clock0gWrapper && clock0g) {
@@ -778,21 +784,21 @@ function draw(time) {
             clock0g.style.background = `conic-gradient(transparent 0deg ${angle}deg, white ${angle}deg 360deg)`;
         }
     }
-
+    // Render each available power-up on the board.
     for (let i = 0; i < lobbyState.powerUps.length; i++) {
         const powerUp = lobbyState.powerUps[i];
-
+          // If a player already holds this power-up, skip it.
         if (powerUp.holder) {
             continue;
         }
-
+        // Calculate the power-up's position on the board.
         const px = -0.5 + 0.5/size + powerUp.x/size;
         const py = 0.5 - 0.5/size - powerUp.y/size;
-
+        // Define the transformation matrix for the power-up, adding rotation and scaling for animation.
         const model = matMul(translate(px, py, 0.025), matMul(rotZ(time / 10.0), scale(0.5/size, 0.5/size)));
-
+        // Draw the power-up object in red.
         drawObject(gl, 1.0, 0.5, 0.5, 3, matMul(board, model));
-
+         // Check for collision between the player and the power-up, and if true, fetch server updates.
         if (player && ball && lobbyState.status === 'playing') {
             let aabb = new AABB(new Vec2(px - 0.3/size, py - 0.3/size), new Vec2(px + 0.3/size, py + 0.3/size));
             if (aabb.collideSphere(ball)) {
@@ -814,36 +820,38 @@ function draw(time) {
             }
         }
     }
-
+//Adjust the ball radius based on the board size.
     if (ball) {
         ball.radius = 0.25 / lobbyState.boardSize;
     }
-
+    // Handle ball movement and gravity-based physics if the game is in 'playing' mode.
     if (ball && lobbyState.status == 'playing') {
         let p = lobbyState.powerUps.find(powerUp => powerUp.holder === player && powerUp.skill === '0g');
-        if (!p) {
+        // Apply gravity if the player is not using the zero-gravity power-up.
+		if (!p) {
             ballVel.x -= 1.0*dt*-Math.sin(rot);
             ballVel.y -= 1.0*dt*Math.cos(rot);
         }
-    
+         // Adjust ball velocity based on acceleration.
         ballVel.x += acc.x * dt;
         ballVel.y += acc.y * dt;
-        
+		
+        // Break down ball movement into multiple steps for smoother collision detection.
         const numSteps = Math.ceil(ballVel.length() / 0.05);
-        
+        // Update the ball's position by applying its velocity over time.
         for (let i = 0; i < numSteps; i++) {
             ball.centre.x += ballVel.x*dt / numSteps;
             ball.centre.y += ballVel.y*dt / numSteps;
 
-            runCollisions(dt / numSteps);
+            runCollisions(dt / numSteps);// Check for and handle collisions at each step.
         }
     }
-
+    // Loop through all players to update their positions on the board.
     let keys = Object.keys(lobbyState.players);
 
     for (let i = 0; i < keys.length; i++) {
         const p = lobbyState.players[keys[i]];
-
+        // Initialize player positions if not already set.
         if (!(p.playerId in playerPositions)) {
             playerPositions[p.playerId] = {
                 playerId: p.playerId,
@@ -851,144 +859,156 @@ function draw(time) {
                 y: p.y,
             };
         }
-
+        // Smoothly update player positions by interpolating between the old and new positions.
         playerPositions[p.playerId].x = playerPositions[p.playerId].x*3/4 + p.x/4;
         playerPositions[p.playerId].y = playerPositions[p.playerId].y*3/4 + p.y/4;
-
+        
+		// Render each player's ball on the board.
         let br = 0.25 / lobbyState.boardSize;
         let bx = (player === keys[i] && ball) ? ball.centre.x : playerPositions[p.playerId].x;
         let by = (player === keys[i] && ball) ? ball.centre.y : playerPositions[p.playerId].y;
 
         const ballModel = matMul(translate(0,0,-1.5), matMul(boardRot, matMul(translate(bx, by, 0.05), scale(br*2))));
 
-        // ball
+        // Draw the player's ball with its unique color.
         const colour = ballColours[i];
         drawObject(gl, colour[0]/255, colour[1]/255, colour[2]/255, 1, ballModel);
 
-        // if (lobbyState.status === 'playing') {
-        //     p.x += p.vx * dt;
-        //     p.y += p.vy * dt;
-        //     p.vx *= 0.8;
-        //     p.vy *= 0.8;
-        // }
+       
     }
 
-    lastStatus = lobbyState.status;
+    lastStatus = lobbyState.status;// Save the last status of the game for future reference.
 
-    requestAnimationFrame(draw);
+    requestAnimationFrame(draw);// Request the next frame for continuous rendering.
 }
-
+// Define an extended collision box size.
 const extendBox = 0.25;
 
+// Collision detection between the ball and walls.
 /**
  * @param {number} dt
  * @param {number | undefined} until
  * @returns 
  */
 function runCollisions(dt, until=undefined) {
+	// If there is no ball or the lobby state doesn't exist, return early (no action needed).
     if (!ball || !lobbyState) return;
-
+    // Get the size of the board from the lobby state.
     let size = lobbyState.boardSize;
-
+    // If 'until' is not provided, it is set to the total number of wall cells (size+1)^2.
     if (until === undefined) {
         until = (size+1)*(size+1);
     }
-
+    // Get the ball's approximate position in the grid (board coordinates).
     let bx = Math.round((ball.centre.x + 0.5) * size);
     let by = Math.round(-(ball.centre.y - 0.5) * size);
-
+    // Loop over a small area around the ball to detect nearby walls (2 cells in each direction)
     for (let i = Math.max(bx - 2, 0); i < Math.min(bx + 2, size+1); i++) {
         for (let j = Math.max(by - 2, 0); j < Math.min(by + 2, size+1); j++) {
-            let idx = j + i*(size+1);
-            // there is a wall here
+           // Calculate the index in the walls array for this position.
+		   let idx = j + i*(size+1);
+            // Check if there is a top wall in this position.
             if (i < size && lobbyState.walls[idx].t) {
+				// Adjust the wall's size by extending it slightly for more accurate collision.
                 let extend = extendBox / size;
                 const wallLeft = -0.5 + (i - extend)/size;
                 const wallY = 0.5 - j/size;
-    
+                
+				// Create an AABB (Axis-Aligned Bounding Box) for the wall.
                 const wall = new AABB(new Vec2(wallLeft, wallY-extend/size), new Vec2(wallLeft+(1+extend*2)/size, wallY+extend/size));
-    
+               
+			   // Check if the ball collides with the wall.
                 if (wall.collideSphere(ball)) {
                     // Citation: https://www.gamedev.net/forums/topic/544686-sphere-aabb-collision-repsonse/544686/
-    
+                    // Find the closest point on the wall to the ball's center.
                     const pbox = wall.closestPoint(ball.centre);
-    
+                    // Calculate the distance from the ball to the wall and adjust it by the ball's radius.
                     let delta = pbox.sub(ball.centre);
                     delta = delta.mul(ball.radius / (delta.length()+0.0001));
-    
+                     
+					 // Calculate the new position of the ball after collision.
                     let psphere = ball.centre.add(delta);
-                    
+                    // Calculate how much to push the ball to prevent it from penetrating the wall.
                     const push = pbox.sub(psphere);
-    
+                    
+					// Adjust the ball's position and velocity based on the collision.
                     ball.centre = ball.centre.add(push.mul(0.5));
-    
                     ballVel = ballVel.add(push.mul(0.02/dt));
                 }
             }
-            // there is a wall here
+             // Check if there is a left wall in this position.
             if (j < size && lobbyState.walls[idx].l) {
                 const wallX = -0.5 + i/size;
                 const wallBottom = 0.5 - (j+1)/size;
-                
+                 // Create an AABB for the left wall.
                 const wall = new AABB(new Vec2(wallX-0.05/size, wallBottom), new Vec2(wallX+0.05/size, wallBottom+1/size));
-    
+                // Check for collision with the left wall.
                 if (wall.collideSphere(ball)) {
                     // Citation: https://www.gamedev.net/forums/topic/544686-sphere-aabb-collision-repsonse/544686/
     
                     const pbox = wall.closestPoint(ball.centre);
-    
                     let delta = pbox.sub(ball.centre);
                     delta = delta.mul(ball.radius / (delta.length()+0.0001));
-    
                     const psphere = ball.centre.add(delta);
-                    
                     const push = pbox.sub(psphere);
-    
+                    // Adjust the ball's position and velocity based on the left wall collision.
                     ball.centre = ball.centre.add(push.mul(0.5));
-    
                     ballVel = ballVel.add(push.mul(0.02/dt));
                 }
             }
         }
     }
 }
-
+// Create an object `params` to hold the data that will be sent to the server.
 function poll() {
-    let params = { lobby: lobbyId, timestamp: new Date().getTime()+"" };
-    if (player && ball) {
+    let params = { lobby: lobbyId, timestamp: new Date().getTime()+"" };// 'timestamp' represents the current time to track when the poll request was made.
+   // Check if both the player and ball exist.
+   if (player && ball) {
+	   // Add the player's name or identifier to the request parameters.
         params.player = player;
+		 // Add the ball's current position (bx, by) to the parameters.
         params.bx = ball.centre.x+"";
         params.by = ball.centre.y+"";
+		// Add the ball's current velocity (vx, vy) to the parameters.
         params.vx = ballVel.x+"";
         params.vy = ballVel.y+"";
-        params.gravity = targetRot+"";
+		// Add the current gravity (rotation) affecting the ball
+        params.gravity = targetRot+"";// Current gravity rotation affecting the ball
+        
+		// Check if the ball has passed a certain y-coordinate threshold (possibly indicating the player won).
         if (ball.centre.y < -0.53) {
             params.win = "";
         }
     }
-
+// Send the parameters to the server using a GET request with query parameters.
     fetch("/lobby/poll?" + new URLSearchParams(params)).then(data => {
+		 // When data is received, parse it as JSON.
         data.json().then(json => {
+			// If the server returns an error, show an alert and clear the lobby state.
             if (json.error) {
                 alert(json.error);
                 lobbyState = undefined;
                 return;
             }
+			// If the server timestamp is newer than the current lobby state, update the lobby.
             if (latestLobbyTime < json.timestamp) {
-                lobbyState = json.lobby;
+                lobbyState = json.lobby;// Update lobby state with the server's response.
             }
         }).catch(err => {
+			// Handle any errors that occur when trying to parse the JSON response.
             alert(err);
             lobbyState = undefined;
         });
     }).catch(err => {
+		// Handle any errors that occur when trying to make the request.
         alert(err);
         lobbyState = undefined;
     });
 }
 
 try {
-    main();
+    main();// Try to run the main function of the program.
 } catch (error) {
+	// If any error occurs, display an alert with the error message.
     alert(error);
 }
