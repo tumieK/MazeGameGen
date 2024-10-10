@@ -564,51 +564,56 @@ function main() {
 }
 
 function drawObject(gl, r, g, b, renderMode, model) {
+	// Set object color in the shader
     let loc = gl.getUniformLocation(program, "colour");
     gl.uniform3f(loc, r, g, b);
-
+    // Set rendering mode in the shader
     loc = gl.getUniformLocation(program, "render_mode");
     gl.uniform1i(loc, renderMode);
-
+    // Set model transformation matrix in the shader
     loc = gl.getUniformLocation(program, "model");
     gl.uniformMatrix4fv(loc, false, model);
-
+    // Update time uniform for animations
     loc = gl.getUniformLocation(program, "time");
     gl.uniform1f(loc, lastTime);
-
+    // Update time uniform for animations
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
-
+// Get references to DOM elements
 let lobbyElem = document.getElementById("lobby");
 let colourElem = document.getElementById("col");
 let winElem = document.getElementById("winScreen");
 
-let lastStatus = 'waiting';
+let lastStatus = 'waiting';// Track the last game state
 
 /**
+ * Main rendering loop. Called on each frame.
  * @param {DOMHighResTimeStamp} time
  */
 function draw(time) {
+	 // Initialize the time for the first frame
     if (!lastTime) lastTime = time;
-    
+    // Calculate time difference between frames and limit the delta time
     dt = Math.min((time - lastTime) / 1000.0, 1/30.0);
     lastTime = time;
     
-
+    // Check if essential WebGL components are available
     if (!canvas || !gl || !vertexBuffer || !program) {
         return;
     }
+	// If the lobby state is not set, continue looping
     if (!lobbyState) {
         requestAnimationFrame(draw);
         return;
     }
-    
+    // Poll the server every 5 frames
     if (currentFrame % 5 == 0) {
         poll();
     }
-
+   
+    // Update player color based on the current lobby state
     if (colourElem && player && lobbyState) {
         let i = Object.keys(lobbyState.players).findIndex(p => p == player);
         const colour = ballColours[i];
@@ -620,17 +625,18 @@ function draw(time) {
             colourDiv.style.display = "block";
         }
     }
-
+   // Set the initial position of the player's ball based on the lobby state
     if (player && ball && lobbyState.status == "waiting") {
         let index = Object.keys(lobbyState.players).findIndex(p => p === player);
         ball.centre.y = 0.5 - 0.5 / lobbyState.boardSize;
         ball.centre.x = Math.round((index + 1) / (Object.keys(lobbyState.players).length + 1) * lobbyState.boardSize) / lobbyState.boardSize - 0.5 - 0.5 / lobbyState.boardSize;
     }
+	// Handle game ending state, show win screen, and update score boards
     if (lobbyState.status === 'finished') {
         if (winElem && lastStatus !== 'finished') {
             winElem.style.display = "flex";
             let playerElem = document.getElementById("winPlayer");
-    
+            // Sort players by their scores
             let players = lobbyState.players;
     
             let playerTuples = Object.keys(players).map(playerId => {
@@ -640,7 +646,7 @@ function draw(time) {
                 }
             });
             playerTuples.sort((a, b) => b.score - a.score);
-    
+            // Update the score board display
             for(let i = 0; i < 4; i++) {
                 let leaderBoard  = document.getElementById("playerScore"+(i+1))
                 if (leaderBoard) {
@@ -653,7 +659,7 @@ function draw(time) {
                     }
                 }
             }
-    
+            // Show the winner's name on the win screen
             if (playerElem) {
                 let i = Object.keys(lobbyState.players).findIndex(p => p === lobbyState?.winner);
                 if(players[lobbyState.winner]){
@@ -661,17 +667,19 @@ function draw(time) {
                     playerElem.innerText = players[lobbyState.winner].username;
                 }
             }
+			// Simulate clicking the win modal and play the victory audio
             let winModal = document.getElementById("btnWin");
             winModal.click();
             let audio = new Audio('/victory.mp3');
             audio.play();
         }
     } else {
+		 // Hide the win screen if the game is not finished
         if (winElem) {
             winElem.style.display = "none";
         }
     }
-
+    // Show or hide the start button based on the game status
     let startElem = document.getElementById("startButton");
     if (startElem && player === null) {
         // @ts-ignore
@@ -681,7 +689,7 @@ function draw(time) {
             startElem.style.display = "none";
         }
     }
-
+    // Show or hide the reset button based on the game status
     let resetElem = document.getElementById("resetButton");
     if (resetElem && player === null) {
         if (lobbyState?.status === 'finished' || lobbyState?.status === 'playing') {
@@ -691,38 +699,40 @@ function draw(time) {
         }
     }
 
-    currentFrame += 1;
-
+    currentFrame += 1;// Increment the frame counter
+   // Set the canvas dimensions and perspective based on the window size
     let width = window.innerWidth * window.devicePixelRatio;
     let height = window.innerHeight * window.devicePixelRatio;
     
     canvas.width = width;
     canvas.height = height;
-
+    // If the perspective matrix needs updating, create a new one
     if (!perspective || lastWidth !== width || lastHeight !== height) {
         perspective = genPerspective(Math.max(Math.atan(height / width) * 1.5, 1.0), width / height, 0.1, 100.0);
         lastWidth = width;
         lastHeight = height;
     }
-
+   // Set the WebGL viewport
     gl.viewport(0, 0, width, height);
-
+    // Use the WebGL program and bind vertex buffer
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
-    // perspective matrix
+    // Pass the perspective matrix to the shader
     let loc = gl.getUniformLocation(program, "perspective");
     gl.uniformMatrix4fv(loc, false, perspective);
-
+    
+	// Clear the canvas with a specific color and clear the depth buffer
     gl.clearColor(0.5, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+   
+    // Rotate the board and apply the rotation matrix
     rot = rot*4/5 + lobbyState.gravityAngle/5;
 
     const boardRot = rotZ(player ? (rot - targetRot) : rot);
 
     const board = matMul(translate(0, 0, -1.5), boardRot);
-
+    // Draw the game board
     drawObject(gl, 78/255, 103/255, 102/255, 0, board);
 
     const cap = matMul(translate(0.0, 0.5, 0.0), matMul(rotX(Math.PI/2), scale(1.0, 0.005, 1.0)));
