@@ -367,17 +367,18 @@ function compileProgram(gl) {
     gl.shaderSource(fragShader, `
     #version 100
 
-    precision highp float;
-
+    precision highp float;// Use high precision for floating-point operations
+    // Define a uniform variable 'colour' to store the color value for the fragment
     uniform vec3 colour;
-    uniform int render_mode;
-    uniform float time;
+    uniform int render_mode;// Define a uniform variable 'render_mode' to control how the shader renders
+    uniform float time;// Define a uniform variable 'time' to make the rendering time-dependent (for animations)
 
-    varying vec3 v_pos;
-
+    varying vec3 v_pos;// The varying 'v_pos' variable holds the position of each vertex passed from the vertex shader
+    
+	// Function to calculate the color channel value based on hue, saturation, and value (HSV)
     float f(float H, float S, float V, float n) {
         float k = n + H/60.0;
-
+        // Loop to keep 'k' within the range 0-6, useful for HSV to RGB conversion
         for (int i = 0; i < 10; i++) {
             if (k >= 6.0) {
                 k -= 6.0;
@@ -388,46 +389,53 @@ function compileProgram(gl) {
 
         return V - V*S*max(0.0, min(k, min(4.0-k, 1.0)));
     }
-
+    // Function to convert HSV color values to RGB
     vec3 hsvToRgb(float H, float S, float V) {
         return vec3(f(H, S, V, 5.0), f(H, S, V, 3.0), f(H, S, V, 1.0));
     }
-
+    // Main function where the fragment's color is set based on render mode
     void main() {
-        vec4 final = vec4(0.0);
+        vec4 final = vec4(0.0);// Initialize the final color with black and fully transparent
         if (render_mode == 0) {
+			// Simple rendering mode, use the color passed as uniform
             final = vec4(colour, 1.0);
         } else if (render_mode == 1) {
             if (length(v_pos) > 0.5) {
-                discard;
+                discard;// Skip rendering this pixel if it's beyond a certain distance from the center
             }
+			// Add some lighting/shading effect using dot product
             float d = dot(v_pos, vec3(-0.707, 0.707, 0.0)) / 2.0;
             final = vec4(colour + d*vec3(1.0) - length(v_pos)*length(v_pos), 1.0);
         } else if (render_mode == 2) {
+			// Apply a gradient effect based on the vertical position
             final = vec4(colour * (v_pos.y + 10.0) / 10.5, 1.0);
         } else if (render_mode == 3) {
+			// Use time-based animation to vary the hue, creating a dynamic effect
             final = vec4(hsvToRgb((sin(time/500.0)+1.0)*20.0, 1.0, 0.9), 1.0);
         }
         gl_FragColor = final;
     }
     `);
-    gl.compileShader(fragShader);
-
+	// Compile the shader source code above
+    gl.compileShader(fragShader);// Compile the fragment shader
+    
+	// Check for any compilation errors and log them
     if (!gl.getShaderParameter(fragShader, gl.COMPILE_STATUS)) {
         const info = gl.getShaderInfoLog(fragShader);
         console.error(info);
         throw "Failed to compile fragment shader.";
     }
-
+    // Attach both vertex and fragment shaders to the program
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragShader);
 
-    gl.viewport(0, 0, 800, 600);
+    gl.viewport(0, 0, 800, 600);// Set the viewport for rendering the scene
 
-    gl.linkProgram(program);
+    gl.linkProgram(program);// Link the shaders into a program
 
-    gl.useProgram(program);
-
+    gl.useProgram(program);// Tell WebGL to use this program for rendering
+    
+	// Check for any linking errors and log them
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
         const info = gl.getProgramInfoLog(program);
         console.error(info);
