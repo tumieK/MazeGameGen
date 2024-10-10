@@ -1,11 +1,15 @@
+// This line checks for errors in the code as you write it
 // @ts-check
 
+// This class is used to represent a point with two numbers: x and y, like coordinates on a grid
 class Vec2 {
     /**
+	 *This is the function that gets called when you create a new point
      * @param {number} x
      * @param {number} y
      */
     constructor(x, y) {
+		// Save the x and y coordinates as part of this point
         /** @type {number} */
         this.x = x;
         /** @type {number} */
@@ -13,29 +17,36 @@ class Vec2 {
     }
 
     /**
+	 * This function calculates how long the vector (the line from the origin to this point) is
      * @returns {number}
      */
     length() {
+		// Uses a math formula (Pythagorean theorem) to calculate length
         return Math.sqrt(this.x*this.x + this.y*this.y);
     }
 
     /**
+	 *This function calculates something called the dot product, which compares two vectors
      * @param {Vec2} other
      * @returns {number}
      */
     dot(other) {
+		// Multiply the x's and y's of the two vectors and add them together
         return this.x * other.x + this.y * other.y;
     }
 
     /**
+	 * This function "projects" one vector onto another.E.g dropping one vector onto another to see how much they overlap.
      * @param {Vec2} other
      * @returns {Vec2}
      */
     project(other) {
+		// Multiply the "other" vector by a number that represents how much they overlap
         return other.mul(this.dot(other) / other.length());
     }
 
     /**
+	 * This function adds two vectors (or points) together to make a new one
      * @param {Vec2} other
      * @returns {Vec2}
      */
@@ -44,6 +55,7 @@ class Vec2 {
     }
 
     /**
+	 * This function subtracts one vector from another to see the difference
      * @param {Vec2} other
      * @returns {Vec2}
      */
@@ -52,6 +64,7 @@ class Vec2 {
     }
 
     /**
+	 * This function multiplies the vector by a number, which could make it bigger or smaller
      * @param {number} other
      */
     mul(other) {
@@ -59,15 +72,18 @@ class Vec2 {
     }
 
     /**
+	 * This function divides the vector by a number, which could make it smaller
      * @param {number} other
      */
     div(other) {
         return new Vec2(this.x / other, this.y / other);
     }
 }
+// This class is used to represent a box shape. The box has a minimum point (bottom-left corner) and a maximum point (top-right corner)
 
 class AABB {
     /**
+	 * Creates a new box with a minimum and maximum point
      * @param {Vec2} min
      * @param {Vec2} max
      */
@@ -80,23 +96,27 @@ class AABB {
 
     // Citation: https://gamedev.stackexchange.com/questions/156870/how-do-i-implement-a-aabb-sphere-collision
     /**
+	 * This function calculates the distance from a point to the box
      * @param {Vec2} p
      * @returns {number}
      */
     squareDistPoint(p) {
         let sqrDist = 0;
-
+        // If the point is outside the box on the left, add the distance squared
         if (p.x < this.min.x) sqrDist += (this.min.x - p.x) * (this.min.x - p.x);
-        if (p.x > this.max.x) sqrDist += (p.x - this.max.x) * (p.x - this.max.x);
-        if (p.y < this.min.y) sqrDist += (this.min.y - p.y) * (this.min.y - p.y);
-        if (p.y > this.max.y) sqrDist += (p.y - this.max.y) * (p.y - this.max.y);
+        // If the point is outside the box on the right, add the distance squared
+		if (p.x > this.max.x) sqrDist += (p.x - this.max.x) * (p.x - this.max.x);
+		// If the point is below the box, add the distance squared
+		if (p.y < this.min.y) sqrDist += (this.min.y - p.y) * (this.min.y - p.y);
+        // If the point is above the box, add the distance squared
+		if (p.y > this.max.y) sqrDist += (p.y - this.max.y) * (p.y - this.max.y);
 
-        return sqrDist;
+        return sqrDist;// Return the total distance
     }
 
     // Citation: https://gamedev.stackexchange.com/questions/156870/how-do-i-implement-a-aabb-sphere-collision
     /**
-     * 
+     * This function checks if a ball (or sphere) touches or collides with the box
      * @param {Sphere} sphere
      * @returns {boolean}
      */
@@ -107,56 +127,60 @@ class AABB {
 
     // Citation: https://gamedev.stackexchange.com/questions/156870/how-do-i-implement-a-aabb-sphere-collision
     /**
-     * 
+     * Finds the closest point on the box to another point
      * @param {Vec2} p
      * @returns {Vec2}
      */
     closestPoint(p) {
         let qx = 0;
         let qy = 0;
-
+        // Find the closest x-coordinate
         let v = p.x;
-        if (v < this.min.x) v = this.min.x;
-        if (v > this.max.x) v = this.max.x;
+        if (v < this.min.x) v = this.min.x;// If the point is to the left of the box, use the left edge
+        if (v > this.max.x) v = this.max.x;// If the point is to the right of the box, use the right edge
         qx = v;
-
+        // Find the closest y-coordinate
         v = p.y;
-        if (v < this.min.y) v = this.min.y;
-        if (v > this.max.y) v = this.max.y;
+        if (v < this.min.y) v = this.min.y;// If the point is below the box, use the bottom edge
+        if (v > this.max.y) v = this.max.y;// If the point is above the box, use the top edge
         qy = v;
         
         return new Vec2(qx, qy);
     }
 }
-
+// This class is used to represent a ball (or sphere)
 class Sphere {
     /**
+	 *Creates a new ball with a center point and a radius
      * @param {Vec2} centre
      * @param {number} radius
      */
     constructor(centre, radius) {
         /** @type {Vec2} */
-        this.centre = centre;
+        this.centre = centre;// Save the center of the ball
         /** @type {number} */
-        this.radius = radius;
+        this.radius = radius;// Save the size of the ball (the radius)
     }
 }
-
+// This part of the code grabs information from the URL in the browser.
+// It looks for a "lobby" and "player" value in the web address to see what game room the player is in.
 const urlParams = new URLSearchParams(window.location.search);
-const lobbyId = urlParams.get('lobby') ?? "";
-const player = urlParams.get('player');
+const lobbyId = urlParams.get('lobby') ?? "";// If there's no "lobby" in the URL, use an empty string
+const player = urlParams.get('player');// Get the player's ID or name from the URL
 
+// Define the height of the walls in the game world (used to keep balls inside)
 const wallHeight = 1.0;
 
+// These are the colors of the balls in the game, represented by RGB values
 const ballColours = [
-    [255, 0, 0],
-    [255, 255, 0],
-    [0, 255, 0],
-    [0, 0, 255],
+    [0, 0, 0],//Black
+    [255, 255, 0],//Yellow
+    [0, 255, 0],//Green
+    [0, 0, 255],//Blue
 ];
-
+// These are the names of the colors, so we can refer to them in text
 const ballColourNames = [
-"RED","YELLOW","GREEN","BLUE"
+"BLACK","YELLOW","GREEN","BLUE"
 ];
 
 const clock0gWrapper = document.getElementById("0g-clock-wrapper");
